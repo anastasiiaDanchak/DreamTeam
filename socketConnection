@@ -1,0 +1,30 @@
+// СЕРВЕР
+
+void Server::incomingConnection(qintptr socketDescriptor)
+{
+    QTcpSocket *clientSocket = new QTcpSocket(this);
+    connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
+    clientSocket->setSocketDescriptor(socketDescriptor);
+    // Додайте сюди логіку взаємодії з клієнтом, яка відповідає за синхронізацію.
+}
+
+void Server::onReadyRead()
+{
+    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    if (socket)
+    {
+        QByteArray data = socket->readAll();
+        // Додайте сюди логіку обробки отриманих даних та взаємодії з клієнтом.
+    }
+}
+
+// КЛІЄНТ
+
+void MainWindow::sendDataToServer(const QByteArray &data)
+{
+    if (clientSocket)
+    {
+        clientSocket->write(data);
+        // Додайте сюди логіку взаємодії з сервером після відправки даних.
+    }
+}
