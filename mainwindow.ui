@@ -1,0 +1,74 @@
+#include "mainwindow.h"
+#include <QVBoxLayout>
+#include<QFile>
+#include<QFormLayout>
+#include <QHBoxLayout>
+#include <QTimer>
+#include <QGroupBox>
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+{
+    server = new QTcpServer(this);
+    clientSocket = nullptr;
+
+    ideaCounter = 1;
+
+    ideaListWidget = new QListWidget(this);
+    logTextEdit = new QTextEdit(this);
+    startButton = new QPushButton("Start Server", this);
+    closeButton = new QPushButton("Close Board", this);
+
+    connect(startButton, &QPushButton::clicked, this, &MainWindow::startServer);
+    connect(closeButton, &QPushButton::clicked, this, &MainWindow::closeBoard);
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    buttonLayout->addWidget(startButton);
+    buttonLayout->addWidget(closeButton);
+
+    QGroupBox *buttonGroupBox = new QGroupBox("Actions");
+    buttonGroupBox->setLayout(buttonLayout);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(ideaListWidget);
+    mainLayout->addWidget(logTextEdit);
+    mainLayout->addWidget(buttonGroupBox);
+
+    QWidget *centralWidget = new QWidget(this);
+    centralWidget->setLayout(mainLayout);
+    setCentralWidget(centralWidget);
+
+    // Додали з'єднання для таймера для автоматичного закриття дошки після 3 хвилин
+    connect(&boardTimer, &QTimer::timeout, this, &MainWindow::closeBoard);
+
+    if (server->listen(QHostAddress::Any, 12345))
+    {
+        logTextEdit->append("Server started. Waiting for connection...");
+        connect(server, &QTcpServer::newConnection, this, &MainWindow::acceptConnection);
+    }
+    else
+    {
+        logTextEdit->append("Error: Unable to start the server.");
+    }
+}
+
+
+
+MainWindow::~MainWindow()
+{
+    if (clientSocket)
+        clientSocket->close();
+    server->close();
+}
+
+void MainWindow::startServer()
+{
+    startButton->setEnabled(false);
+    logTextEdit->clear();
+    ideaListWidget->clear();
+    ideas.clear();
+    ideaCounter = 1;
+    logTextEdit->append("Board is open. Waiting for ideas...");
+    boardTimer.start(180000); // 3 хвилини = 180000 мілісекунд
+
+}
