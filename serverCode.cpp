@@ -64,3 +64,22 @@ int main() {
         WSACleanup();
         return 1;
     }
+// Приймання даних від клієнта
+
+    std::cout << "Client connected." << std::endl;
+    char recvBuffer[1024];
+    std::string ideas[5];
+    for (int i = 0; i < 5; i++) {
+        int bytesReceived = recv(clientSocket, recvBuffer, sizeof(recvBuffer), 0);
+        if (bytesReceived > 0) {
+            recvBuffer[bytesReceived] = '\0';
+            std::cout << "Idea no." << (i+1) << " from the client: " << recvBuffer << std::endl;
+            
+        }
+        ideas[i] = recvBuffer;
+        recvBuffer[0] = '\0';
+    }
+
+    HANDLE hFile;
+    DWORD dwBytesWritten;
+}
