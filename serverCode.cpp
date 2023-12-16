@@ -82,4 +82,48 @@ int main() {
 
     HANDLE hFile;
     DWORD dwBytesWritten;
+
+    hFile = CreateFileA("C:\\Users\\Taras\\lab9OS_Output.txt", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        std::cerr << "Unable to create or open file." << std::endl;
+        return 1;
+    }
+
+    // Запис даних у файл
+    std::stringstream ss;
+    std::string text;
+
+    for (int i = 0; i < 5; i++) {
+        
+        std::string str1 = "Idea no.";
+        //std::string str2 = (i+1);
+        std::string str3 = " : ";
+
+        ss << "\n" << str1 << (i + 1) << str3 << ideas[i];
+
+        text = ss.str();
+
+        if (!WriteFile(hFile, text.c_str(), strlen(text.c_str()), &dwBytesWritten, NULL)) {
+            std::cerr << "Error writing to file." << std::endl;
+            CloseHandle(hFile);
+            return 1;
+        }
+
+        ss.str("");
+    }
+    
+
+    std::cout << "Data written to file successfully!" << std::endl;
+
+    // Закриття файлу
+    CloseHandle(hFile);
+
+    // Закриття сокетів
+    closesocket(clientSocket);
+    closesocket(serverSocket);
+    WSACleanup();
+
+    return 0;
+}
 }
