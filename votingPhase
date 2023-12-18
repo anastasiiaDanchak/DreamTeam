@@ -1,0 +1,55 @@
+std::cout << "Voting phase is now open. Clients can vote for the three best ideas." << std::endl;
+char num[4];
+
+for (int i = 0; i < clientSockets.size(); i++) {
+    recv(clientSockets[i], num, sizeof(num), 0);
+    int receivedNum = *reinterpret_cast<int*>(num);
+    ss.str("");
+    ss << "\nthe idea no." << receivedNum << " got a vote!";
+    ideasWithVotes[receivedNum - 1].second++;
+    std::cout << ss.str();
+    num[0] = '\0';
+}
+
+int max[3] = { -1, -1, -1 };
+std::vector<int> votes(ideasWithVotes.size());
+for (int i = 0; i < ideasWithVotes.size(); i++) {
+    votes[i] = ideasWithVotes[i].second;
+}
+
+
+auto number1 = std::max_element(votes.begin(), votes.end());
+int maxEl = *number1;
+max[0] = maxEl;
+
+votes.clear();
+votes.resize(ideasWithVotes.size()-1);
+int a = 0;
+for (int i = 0; i < ideasWithVotes.size(); i++) {
+    if (ideasWithVotes[i].second == max[0]) continue;
+
+    votes[a] = ideasWithVotes[i].second;
+    a++;
+}
+auto number2 = std::max_element(votes.begin(), votes.end());
+maxEl = *number2;
+max[1] = maxEl;
+
+votes.clear();
+votes.resize(ideasWithVotes.size() - 2);
+a = 0;
+for (int i = 0; i < ideasWithVotes.size(); i++) {
+    if (ideasWithVotes[i].second == max[0] || ideasWithVotes[i].second == max[1]) continue;
+
+    votes[a] = ideasWithVotes[i].second;
+    a++;
+}
+auto number3 = std::max_element(votes.begin(), votes.end());
+maxEl = *number3;
+max[2] = maxEl;
+
+for (int i = 0; i < ideasWithVotes.size(); i++) {
+    if (ideasWithVotes[i].second == max[0] || ideasWithVotes[i].second == max[1] || ideasWithVotes[i].second == max[2]) {
+        std::cout << "\n\n" << ideasWithVotes[i].first;
+    }
+}
