@@ -27,7 +27,7 @@ int main() {
 
     // Налаштування адреси сервера
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-адреса сервера "185.204.69.10" 
+    serverAddr.sin_addr.s_addr = inet_addr("10.50.175.151"); // IP-адреса сервера "185.204.69.10" 
     serverAddr.sin_port = htons(12000); // Порт сервера
 
     // Підключення до сервера
@@ -37,7 +37,7 @@ int main() {
         WSACleanup();
         return 1;
     }
-
+   
     std::cout << "Connected to server." << std::endl;
     std::cout << "\nEnter ideas: (if you're out of ideas, enter " - " ";
     // Операції з сервером (обмін даними) тут...
